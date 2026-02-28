@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caferi İmsakiyesi</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --deep: #0d1117;
+    --surface: #141920;
+    --card: #1a2230;
+    --border: rgba(201,168,76,0.2);
+    --text: #e8dcc8;
+    --muted: #8a7d6a;
+    --green: #4caf7d;
+    --accent: #2a3a52;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background geometric pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(76,175,125,0.03) 0%, transparent 50%),
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 60px,
+        rgba(201,168,76,0.015) 60px,
+        rgba(201,168,76,0.015) 61px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 40px 0 30px;
+  }
+
+  .arabic-title {
+    font-family: 'Amiri', serif;
+    font-size: clamp(28px, 6vw, 48px);
+    color: var(--gold);
+    line-height: 1.2;
+    letter-spacing: 2px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.3);
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 16px auto;
+  }
+
+  /* Location card */
+  .location-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .location-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .loc-icon {
+    width: 42px;
+    height: 42px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .loc-text h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .loc-text p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, var(--gold), #a07830);
+    color: #0d0d0d;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,168,76,0.3); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+  }
+
+  .btn-outline:hover { background: rgba(201,168,76,0.08); box-shadow: none; }
+
+  /* Method badge */
+  .method-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(76,175,125,0.1);
+    border: 1px solid rgba(76,175,125,0.2);
+    color: var(--green);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+
+  /* Today card */
+  .today-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .today-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .today-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .today-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .today-date {
+    font-family: 'Amiri', serif;
+    font-size: clamp(20px, 4vw, 28px);
+    color: var(--text);
+    margin-top: 4px;
+  }
+
+  .hijri-date {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .times-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+  }
+
+  .time-item {
+    background: var(--accent);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: center;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+
+  .time-item.active {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .time-item.active::after {
+    content: '●';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    color: var(--gold);
+    font-size: 8px;
+  }
+
+  .time-name {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .time-value {
+    font-family: 'Amiri', serif;
+    font-size: 24px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .time-item.imsak .time-value { color: #7bb8e8; }
+  .time-item.sabah .time-value { color: #a8d8a8; }
+  .time-item.ogle .time-value { color: var(--gold-light); }
+  .time-item.ikindi .time-value { color: #f4a261; }
+  .time-item.aksam .time-value { color: #e07c9e; }
+  .time-item.yatsi .time-value { color: #9b89c4; }
+
+  /* Month selector */
+  .month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+
+  .month-title {
+    font-family: 'Amiri', serif;
+    font-size: clamp(18px, 4vw, 24px);
+    color: var(--gold);
+    text-align: center;
+    flex: 1;
+  }
+
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--gold);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .nav-btn:hover { background: rgba(201,168,76,0.1); }
+
+  /* Month tabs */
+  .month-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    scrollbar-width: none;
+  }
+
+  .month-tabs::-webkit-scrollbar { display: none; }
+
+  .month-tab {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    color: var(--muted);
+    background: transparent;
+    font-family: 'Tajawal', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .month-tab:hover { color: var(--text); border-color: var(--border); }
+  .month-tab.active { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold); }
+
+  /* Table */
+  .table-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    padding: 14px 12px;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(201,168,76,0.05);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+
+  thead th:first-child { text-align: left; padding-left: 20px; }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(201,168,76,0.04); }
+  tbody tr.today-row { background: rgba(201,168,76,0.08) !important; }
+  tbody tr.today-row td:first-child { border-left: 2px solid var(--gold); }
+
+  tbody td {
+    padding: 11px 12px;
+    text-align: center;
+    color: var(--text);
+    font-family: 'Amiri', serif;
+    font-size: 15px;
+  }
+
+  tbody td:first-child {
+    text-align: left;
+    padding-left: 20px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  tbody td:nth-child(2) {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  /* Loading / Error states */
+  .state-box {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .state-box .icon { font-size: 40px; margin-bottom: 16px; }
+  .state-box h3 { font-size: 16px; color: var(--text); margin-bottom: 8px; }
+  .state-box p { font-size: 13px; line-height: 1.6; max-width: 300px; margin: 0 auto 20px; }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(201,168,76,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Footer note */
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 32px;
+    line-height: 1.7;
+    padding: 0 20px;
+  }
+
+  .footer-note span { color: var(--gold); }
+
+  /* Manual search */
+  .search-box {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    width: 100%;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input::placeholder { color: var(--muted); }
+  .search-input:focus { border-color: var(--gold); }
+
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: #1e2a3a;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 100;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .search-result-item {
+    padding: 11px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+
+  .search-result-item:hover { background: rgba(201,168,76,0.1); color: var(--gold); }
+
+  .loc-search-wrap { position: relative; width: 100%; }
+
+  .ios-tip {
+    background: rgba(255,200,0,0.08);
+    border: 1px solid rgba(255,200,0,0.2);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #e8c97a;
+    margin-top: 10px;
+    line-height: 1.6;
+    display: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .times-grid { grid-template-columns: repeat(3, 1fr); }
+    thead th { padding: 12px 6px; font-size: 9px; }
+    tbody td { padding: 10px 6px; font-size: 14px; }
+    tbody td:first-child { padding-left: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="arabic-title">الإمساكية الجعفرية</div>
+    <div class="divider"></div>
+    <div class="subtitle">Caferi Fıkhına Göre Namaz Vakitleri</div>
+  </header>
+
+  <div style="text-align:center; margin-bottom: 20px;">
+    <div class="method-badge">
+      <span>✦</span>
+      Caferi / İmamiye · Fecr-i Sadık 17.5° · İşa 14°
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="location-card" style="flex-direction:column; align-items:stretch;">
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+      <div class="location-info">
+        <div class="loc-icon">📍</div>
+        <div class="loc-text">
+          <h3 id="locName">Konum bekleniyor</h3>
+          <p id="locCoords">Aşağıdan konum alın veya şehir arayın</p>
+        </div>
+      </div>
+      <button class="btn" onclick="getLocation()">📡 GPS ile Al</button>
+    </div>
+    <div id="iosTip" class="ios-tip">
+      ⚠️ <strong>iPhone / Safari:</strong> Konum izni için → <em>Ayarlar → Safari → Konum → "Sor"</em> seçin, sonra sayfayı yenileyin ve izin verin.
+    </div>
+    <div class="loc-search-wrap" style="margin-top:12px;">
+      <div class="search-box">
+        <input type="text" class="search-input" id="cityInput" placeholder="Şehir ara: İstanbul, Tahran, Kerbela..." oninput="searchCity(this.value)" autocomplete="off" />
+      </div>
+      <div class="search-results" id="searchResults" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Today -->
+  <div class="today-card" id="todayCard">
+    <div class="state-box">
+      <div class="spinner"></div>
+      <p>Namaz vakitleri yükleniyor...</p>
+    </div>
+  </div>
+
+  <!-- Monthly table -->
+  <div id="monthSection" style="display:none">
+    <div class="month-tabs" id="monthTabs"></div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Tarih</th>
+            <th>Gün</th>
+            <th>İmsak</th>
+            <th>Sabah</th>
+            <th>Öğle</th>
+            <th>İkindi</th>
+            <th>Akşam</th>
+            <th>Yatsı</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <span>Caferi / İmamiye Fıkhı</span> · Fecr-i Sadık 17.5° · İşa 14°<br>
+    Öğle vakti zeval + 2dk · İkindi: gölge = 2× cisim · Akşam: güneş diski tamamen batınca<br>
+    Veriler <span>Aladhan API</span> üzerinden hesaplanmaktadır
+  </div>
+
+</div>
+
+<script>
+// =========== CONFIG ===========
+const DAYS_TR = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const MONTHS_TR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+// Caferi fıkhı parametreleri:
+// Method: Custom - Fajr 17.5°, Isha 14° (Sistani / İmamiye genel kabulü)
+// MidnightMode: Jafari (Geceyarısı = Güneş batımı + gece 2/3)
+// School: 0 (Standart - İkindi gölge = 1× ama Caferi'de gölge = cisim + 1× olarak hesaplanır)
+// Biz method=JAFARI (13) kullanacağız - Aladhan'ın yerleşik Caferi metodu
+
+const API_BASE = 'https://api.aladhan.com/v1';
+const MAGHRIB_MODE = "QUM";   // "JAFARI" veya "QUM"
+const MAGHRIB_OFFSET = 10;    // İstanbul için
+let lat = null, lon = null, cityName = null;
+let allData = {}; // {year: {month: [days]}}
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth() + 1; // 1-based
+let todayStr = toDateStr(new Date());
+
+function toDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getLocation() {
+  document.getElementById('locName').textContent = 'Konum alınıyor...';
+  document.getElementById('locCoords').textContent = '—';
+  document.getElementById('iosTip').style.display = 'none';
+
+  if (!navigator.geolocation) {
+    showLocationError('Tarayıcınız konum özelliğini desteklemiyor.');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async pos => {
+      lat = pos.coords.latitude;
+      lon = pos.coords.longitude;
+      document.getElementById('locCoords').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+      document.getElementById('iosTip').style.display = 'none';
+
+      // Reverse geocode ile şehir adı
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+        const d = await r.json();
+        cityName = d.address.city || d.address.town || d.address.village || d.address.county || 'Bilinmeyen Konum';
+        document.getElementById('locName').textContent = cityName;
+      } catch {
+        cityName = `${lat.toFixed(2)}°N, ${lon.toFixed(2)}°E`;
+        document.getElementById('locName').textContent = cityName;
+      }
+
+      loadMonth(currentYear, currentMonth);
+    },
+    err => {
+      const msgs = {1:'Konum izni reddedildi.', 2:'Konum sinyal hatası.', 3:'Zaman aşımı — tekrar deneyin.'};
+      showLocationError(msgs[err.code] || 'Bilinmeyen hata.');
+    },
+    { timeout: 15000, enableHighAccuracy: false, maximumAge: 60000 }
+  );
+}
+
+function showLocationError(msg) {
+  document.getElementById('locName').textContent = 'Konum alınamadı';
+  document.getElementById('locCoords').textContent = msg;
+  // iOS Safari ipucu göster
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) document.getElementById('iosTip').style.display = 'block';
+  document.getElementById('todayCard').innerHTML = `
+    <div class="state-box">
+      <div class="icon">📍</div>
+      <h3>Konum Gerekli</h3>
+      <p>${msg}</p>
+      <p style="margin-top:8px;font-size:12px;">GPS butonu ile deneyin veya yukarıdaki arama kutusuna şehir adı yazın.</p>
+    </div>`;
+}
+
+let searchTimer = null;
+async function searchCity(val) {
+  const box = document.getElementById('searchResults');
+  if (val.length < 2) { box.style.display = 'none'; return; }
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=5&addressdetails=1`);
+      const results = await r.json();
+      if (!results.length) { box.style.display = 'none'; return; }
+      box.innerHTML = results.map(p => {
+        const name = p.display_name.split(',').slice(0,3).join(', ');
+        return `<div class="search-result-item" onclick="selectPlace(${p.lat}, ${p.lon}, '${name.replace(/'/g,"\\'")}')">📍 ${name}</div>`;
+      }).join('');
+      box.style.display = 'block';
+    } catch { box.style.display = 'none'; }
+  }, 400);
+}
+
+function selectPlace(placeLat, placeLon, name) {
+  lat = parseFloat(placeLat);
+  lon = parseFloat(placeLon);
+  cityName = name;
+  document.getElementById('locName').textContent = name;
+  document.getElementById('locCoords').textContent = `${lat.toFixed(4)}°, ${lon.toFixed(4)}°`;
+  document.getElementById('cityInput').value = name;
+  document.getElementById('searchResults').style.display = 'none';
+  document.getElementById('iosTip').style.display = 'none';
+  loadMonth(currentYear, currentMonth);
+}
+
+// Close search on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.loc-search-wrap')) {
+    const box = document.getElementById('searchResults');
+    if (box) box.style.display = 'none';
+  }
+});
+
+async function fetchMonth(year, month) {
+  const key = `${year}-${month}`;
+  if (allData[key]) return allData[key];
+
+  // Aladhan Calendar endpoint - method 13 = Jafari
+  const url = `${API_BASE}/calendar/${year}/${month}?latitude=${lat}&longitude=${lon}&method=13`;
+  const r = await fetch(url);
+  const d = await r.json();
+  if (d.code !== 200) throw new Error(d.status);
+
+  allData[key] = d.data;
+  return d.data;
+}
+
+function formatTime(timeStr) {
+  // "05:23 (EET)" -> "05:23"
+  return timeStr.split(' ')[0];
+}
+function addMinutes(timeStr, minutesToAdd) {
+  const [h, m] = timeStr.split(':').map(Number);
+  const date = new Date();
+  date.setHours(h);
+  date.setMinutes(m + minutesToAdd);
+  return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+}
+
+async function loadMonth(year, month) {
+  currentYear = year;
+  currentMonth = month;
+
+  // Show loading in table area
+  document.getElementById('monthSection').style.display = 'block';
+  document.getElementById('tableBody').innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="spinner"></div><p>Yükleniyor...</p></div></td></tr>`;
+
+  updateMonthTabs();
+
+  try {
+    const days = await fetchMonth(year, month);
+    renderTable(days, year, month);
+
+    // Update today card if needed
+    const todayDate = new Date();
+    if (year === todayDate.getFullYear() && month === todayDate.getMonth() + 1) {
+      const todayIdx = todayDate.getDate() - 1;
+      if (days[todayIdx]) renderToday(days[todayIdx]);
+    }
+  } catch (e) {
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="8"><div class="state-box"><div class="icon">⚠️</div><h3>Hata</h3><p>${e.message}</p></div></td></tr>`;
+  }
+}
+
+function renderToday(dayData) {
+  const t = dayData.timings;
+  const date = dayData.date;
+  const d = new Date(date.gregorian.date.split('-').reverse().join('-'));
+  const dayName = DAYS_TR[d.getDay()];
+
+  // Determine active prayer
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const timings = [
+    { key: 'imsak', label: 'İmsak', val: t.Imsak, cls: 'imsak' },
+    { key: 'fajr', label: 'Sabah', val: t.Fajr, cls: 'sabah' },
+    { key: 'dhuhr', label: 'Öğle', val: t.Dhuhr, cls: 'ogle' },
+    { key: 'asr', label: 'İkindi', val: t.Asr, cls: 'ikindi' },
+    { key: 'maghrib', label: 'Akşam', val: MAGHRIB_MODE === "QUM" ? addMinutes(formatTime(t.Sunset), MAGHRIB_OFFSET) : formatTime(t.Maghrib), cls: 'aksam' },
+    { key: 'isha', label: 'Yatsı', val: t.Isha, cls: 'yatsi' },
+  ];
+
+  // find active (next prayer)
+  let activeIdx = -1;
+  for (let i = 0; i < timings.length; i++) {
+    const [h, m] = formatTime(timings[i].val).split(':').map(Number);
+    if (nowMin < h * 60 + m) { activeIdx = i; break; }
+  }
+
+  const html = `
+    <div class="today-header">
+      <div>
+        <div class="today-label">Bugün</div>
+        <div class="today-date">${dayName}, ${date.gregorian.day} ${MONTHS_TR[d.getMonth()]} ${year}</div>
+      </div>
+      <div class="hijri-date">${date.hijri.day} ${date.hijri.month.ar} ${date.hijri.year}</div>
+    </div>
+    <div class="times-grid">
+      ${timings.map((item, i) => `
+        <div class="time-item ${item.cls}${i === activeIdx ? ' active' : ''}">
+          <div class="time-name">${item.label}</div>
+          <div class="time-value">${formatTime(item.val)}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('todayCard').innerHTML = html;
+}
+
+function renderTable(days, year, month) {
+  const tbody = document.getElementById('tableBody');
+  const today = new Date();
+  const todayDateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+  tbody.innerHTML = days.map(dayData => {
+    const t = dayData.timings;
+    const greg = dayData.date.gregorian;
+    const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(greg.day).padStart(2,'0')}`;
+    const d = new Date(greg.date.split('-').reverse().join('-'));
+    const dayName = DAYS_TR[d.getDay()];
+    const isToday = dateStr === todayDateStr;
+
+    return `<tr class="${isToday ? 'today-row' : ''}">
+      <td>${greg.day} ${MONTHS_TR[month-1].slice(0,3)}</td>
+      <td>${dayName.slice(0,3)}</td>
+      <td>${formatTime(t.Imsak)}</td>
+      <td>${formatTime(t.Fajr)}</td>
+      <td>${formatTime(t.Dhuhr)}</td>
+      <td>${formatTime(t.Asr)}</td>
+      <td>${MAGHRIB_MODE === "QUM" ? addMinutes(formatTime(t.Sunset), MAGHRIB_OFFSET) : formatTime(t.Maghrib)}</td>
+      <td>${formatTime(t.Isha)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function updateMonthTabs() {
+  const container = document.getElementById('monthTabs');
+  container.innerHTML = MONTHS_TR.map((m, i) => `
+    <button class="month-tab ${(i+1) === currentMonth ? 'active' : ''}" 
+      onclick="loadMonth(${currentYear}, ${i+1})">${m}</button>
+  `).join('');
+
+  // Scroll active into view
+  setTimeout(() => {
+    const active = container.querySelector('.active');
+    if (active) active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, 100);
+}
+
+// Init
+document.getElementById('todayCard').innerHTML = `
+  <div class="state-box">
+    <div class="icon">🕌</div>
+    <h3>Konum Bekleniyor</h3>
+    <p>GPS ile konum alın ya da yukarıdaki kutuya şehir adı yazın.</p>
+  </div>`;
+getLocation();
+</script>
+</body>
+</html>
