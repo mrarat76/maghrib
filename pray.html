@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şii Namaz Vakitleri - MR.ARAT</title>
+    <!-- Modern Font Eklemesi -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Derin Gece Mavisi */
+            --card-bg: rgba(255, 255, 255, 0.1); /* Glassmorphism */
+            --text-main: #ffffff;
+            --text-secondary: #bdc3c7;
+            --accent: #f1c40f; /* Altın Sarısı */
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --highlight-bg: rgba(241, 196, 15, 0.2);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Ana Kart Tasarımı (Cam Efekti) */
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Başlık ve İmza */
+        h1 {
+            margin: 0;
+            font-weight: 300;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .signature {
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-top: 5px;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+        }
+
+        /* Arama Kutusu */
+        .search-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        input {
+            flex: 1;
+            background: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.2);
+        }
+
+        button {
+            background: var(--accent);
+            color: #1a1a1a;
+            border: none;
+            padding: 0 25px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
+        }
+
+        /* Sonuçlar Alanı */
+        #results-area {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .location-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        /* Liste Tasarımı */
+        .prayer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .prayer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            transition: 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .prayer-row:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.02);
+        }
+
+        /* Önemli Vakitlerin Vurgulanması */
+        .highlight {
+            background: var(--highlight-bg);
+            border-left: 4px solid var(--accent);
+        }
+
+        .prayer-name {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prayer-time {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        /* Footer ve Notlar */
+        .footer-note {
+            margin-top: 25px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
+        }
+
+        /* Yükleniyor ve Hata */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+
+        .error-msg {
+            display: none;
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #ffadad;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Şii Namaz Vakitleri</h1>
+    <div class="signature">by MR.ARAT</div>
+    
+    <div class="search-wrapper">
+        <input type="text" id="cityInput" placeholder="Şehir girin (örn. İstanbul, Necef)" autocomplete="off" onkeydown="if(event.key==='Enter') fetchTimes()">
+        <button onclick="fetchTimes()">ARA</button>
+    </div>
+
+    <div class="spinner" id="spinner"></div>
+    <div class="error-msg" id="error-msg"></div>
+
+    <div id="results-area">
+        <div class="location-header" id="city-display">Şehir</div>
+        <div class="date-display" id="date-display">Tarih</div>
+
+        <div class="prayer-list">
+            <div class="prayer-row">
+                <span class="prayer-name">🌌 İmsak</span>
+                <span class="prayer-time" id="t-imsak">--:--</span>
+            </div>
+            <div class="prayer-row highlight">
+                <span class="prayer-name">🌅 Sabah (Fecr)</span>
+                <span class="prayer-time" id="t-fajr">--:--</span>
+            </div>
+            <div class="prayer-row">
+                <span class="prayer-name">☀️ Güneş</span>
+                <span class="prayer-time" id="t-sunrise">--:--</span>
+            </div>
+            <div class="prayer-row highlight">
+                <span class="prayer-name">🕛 Öğle (Zuhr)</span>
+                <span class="prayer-time" id="t-dhuhr">--:--</span>
+            </div>
+            <div class="prayer-row">
+                <span class="prayer-name">⛅ İkindi (Asr)</span>
+                <span class="prayer-time" id="t-asr">--:--</span>
+            </div>
+            <div class="prayer-row">
+                <span class="prayer-name">🌇 Gün Batımı</span>
+                <span class="prayer-time" id="t-sunset">--:--</span>
+            </div>
+            <div class="prayer-row highlight">
+                <span class="prayer-name">🕌 Akşam (Mağrib)</span>
+                <span class="prayer-time" id="t-maghrib">--:--</span>
+            </div>
+            <div class="prayer-row">
+                <span class="prayer-name">🌃 Yatsı (İşa)</span>
+                <span class="prayer-time" id="t-isha">--:--</span>
+            </div>
+            <div class="prayer-row">
+                <span class="prayer-name">🌑 Gece Yarısı</span>
+                <span class="prayer-time" id="t-midnight">--:--</span>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Hesaplama Yöntemi: Şii İsnaaşeri (Leva Enstitüsü, Kum)<br>
+            Akşam namazı, güneş battıktan sonra doğudaki kırmızılığın kaybolmasıyla başlar (~15 dk sonra).
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tarih Formatlayıcı (API için DD-MM-YYYY)
+    function getFormattedDate() {
+        const d = new Date();
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+
+    // Zaman Formatlayıcı (Sadece 24 Saat, ekleri temizler)
+    function cleanTime(timeString) {
+        if (!timeString) return '--:--';
+        return timeString.split(' ')[0];
+    }
+
+    async function fetchTimes() {
+        const cityInput = document.getElementById('cityInput');
+        const city = cityInput.value.trim();
+        const spinner = document.getElementById('spinner');
+        const resultsArea = document.getElementById('results-area');
+        const errorMsg = document.getElementById('error-msg');
+
+        if (!city) return;
+
+        // UI Sıfırla
+        spinner.style.display = 'block';
+        resultsArea.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        try {
+            // 1. Koordinatları Bul (Nominatim)
+            const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`;
+            const geoRes = await fetch(geoUrl);
+            if (!geoRes.ok) throw new Error("Konum servisine erişilemedi.");
+            
+            const geoData = await geoRes.json();
+            if (geoData.length === 0) throw new Error("Şehir bulunamadı. Lütfen ismini kontrol edin.");
+
+            const lat = parseFloat(geoData[0].lat).toFixed(4);
+            const lon = parseFloat(geoData[0].lon).toFixed(4);
+            const displayName = geoData[0].display_name.split(',')[0];
+
+            // 2. Namaz Vakitlerini Çek (Aladhan - Method 0: Shia)
+            const dateStr = getFormattedDate();
+            const apiURL = `https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lon}&method=0`;
+
+            const prayerRes = await fetch(apiURL);
+            if (!prayerRes.ok) throw new Error("Vakit servisinde hata oluştu.");
+
+            const data = await prayerRes.json();
+            if (data.code !== 200) throw new Error("Vakitler alınamadı.");
+
+            // 3. Ekrana Yazdır
+            document.getElementById('city-display').innerText = "📍 " + displayName.toUpperCase();
+            
+            // Türkçe Tarih
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const trDate = new Date().toLocaleDateString('tr-TR', options);
+            document.getElementById('date-display').innerText = trDate;
+
+            const t = data.data.timings;
+            
+            const timeMap = {
+                't-imsak': t.Imsak,
+                't-fajr': t.Fajr,
+                't-sunrise': t.Sunrise,
+                't-dhuhr': t.Dhuhr,
+                't-asr': t.Asr,
+                't-sunset': t.Sunset,
+                't-maghrib': t.Maghrib,
+                't-isha': t.Isha,
+                't-midnight': t.Midnight
+            };
+
+            for (const [id, time] of Object.entries(timeMap)) {
+                document.getElementById(id).innerText = cleanTime(time);
+            }
+
+            spinner.style.display = 'none';
+            resultsArea.style.display = 'block';
+
+        } catch (err) {
+            console.error(err);
+            spinner.style.display = 'none';
+            errorMsg.innerText = "Hata: " + err.message;
+            errorMsg.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
